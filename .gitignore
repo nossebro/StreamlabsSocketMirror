@@ -1,0 +1,6 @@
+.vscode/
+API_Key.js
+Settings.js
+Settings.json
+debug*
+info*

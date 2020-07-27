@@ -1,0 +1,22 @@
+{
+	"output_file": "Settings.json",
+	"MirrorAll": {
+		"type": "checkbox",
+		"value": false,
+		"label": "Mirror All Messages",
+		"tooltip": "Mirror all events recieved onto the local websocket"
+	},
+	"SLSocketToken": {
+		"type": "textbox",
+		"value": "",
+		"label": "Streamlabs Socket Token",
+		"tooltip": "The Streamlabs Socket Token found at https://streamlabs.com/dashboard#/settings/api-settings under the tab API Tokens",
+		"group": "Streamlabs"
+	},
+	"DebugMode": {
+		"type": "checkbox",
+		"value": false,
+		"label": "Debug Mode",
+		"tooltip": "Enables Debug Mode"
+	}
+}
