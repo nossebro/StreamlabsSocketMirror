@@ -185,12 +185,15 @@ def StreamlabsSocketAPIConnected(data):
 #   StreamlabsSocketAPI Disconnect Function
 #---------------------------------------
 def StreamlabsSocketAPIDisconnected(data):
+	global Logger
 	Logger.debug("Disconnected: {0}".format(data))
 
 #---------------------------------------
 #   StreamlabsSocketAPI Error Function
 #---------------------------------------
 def StreamlabsSocketAPIError(data):
+	global Logger
+	Logger.error(data.Message)
 	Logger.exception(data)
 
 #---------------------------------------
