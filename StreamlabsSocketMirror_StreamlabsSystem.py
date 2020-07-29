@@ -248,5 +248,7 @@ def StreamlabsSocketAPIEvent(data):
 				Logger.info(message)
 			elif event["type"] == "resub":
 				Logger.info(message)
+			else:
+				Logger.warning("Unrecognised event for {0}: {1}".format(event["for"], json.dumps(event)))
 		else:
 			Logger.warning("Unrecognised event for {0}: {1}".format(event["for"], json.dumps(event)))
