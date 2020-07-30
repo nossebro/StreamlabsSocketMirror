@@ -215,12 +215,12 @@ def StreamlabsSocketAPIEvent(data):
 	if isinstance(event["message"], dict):
 		event["message"] = json.loads( "[ {0} ]".format(json.dumps(event["message"])))
 	for message in event["message"]:
-		if message["isTest"]:
+		if "isTest" in message:
 			if not ScriptSettings.SLTestMode:
 				Logger.warning("Received test event, resend disabled in configuration")
 				Logger.debug(json.dumps(event))
 				continue
-		if message["repeat"]:
+		if "repeat" in message:
 			if not ScriptSettings.SLRepeat:
 				Logger.warning("Received repeated event, resend disabled in configuration")
 				Logger.debug(json.dumps(event))
