@@ -9,6 +9,7 @@ import os
 import codecs
 import json
 import uuid
+from collections import deque
 clr.AddReference("SocketIOClientDotNet.dll")
 clr.AddReference("Newtonsoft.Json.dll")
 from System import Uri, Action
@@ -107,6 +108,34 @@ def MergeLists(x = dict(), y = dict()):
 			y.append(attr)
 	return y
 
+def Nonce():
+	nonce = uuid.uuid1()
+	oauth_nonce = nonce.hex
+	return oauth_nonce
+
+def GetTwitchUserID(Username = None):
+	global ScriptSettings
+	global Logger
+	ID = None
+	if not Username:
+		Username = ScriptSettings.StreamerName
+	Header = {
+		"Client-ID": ScriptSettings.JTVClientID,
+		"Authorization": "Bearer {0}".format(ScriptSettings.JTVToken)
+	}
+	Logger.debug("Header: {0}".format(json.dumps(Header)))
+	result = json.loads(Parent.GetRequest("https://api.twitch.tv/helix/users?login={0}".format(Username.lower()), Header))
+	if result["status"] == 200:
+		response = json.loads(result["response"])
+		Logger.debug("Response: {0}".format(json.dumps(response)))
+		ID = response["data"][0]["id"]
+		Logger.debug("ID: {0}".format(ID))
+	elif "error" in result:
+		Logger.error("Error Code {0}: {1}".format(result["status"], result["error"]))
+	else:
+		Logger.warning("Response unknown: {0}".format(result))
+	return ID
+
 #---------------------------------------
 #   Chatbot Initialize Function
 #---------------------------------------
@@ -138,7 +167,7 @@ def Init():
 		Logger.warning("Streamlabs Socket Token not configured")
 
 	global UserIDCache
-	UserIDCache = dict()
+	UserIDCache = deque(list(), 100)
 
 #---------------------------------------
 #   Chatbot Script Unload Function
@@ -211,15 +240,20 @@ def StreamlabsSocketAPIEvent(data):
 		Logger.debug("Send original event to Local Socket")
 		Parent.BroadcastWsEvent("STREAMLABS", json.dumps(event))
 	if not "message" in event:
-		logger.debug("No message in event: {0}".format(json.dumps(event)))
+		Logger.debug("No message in event: {0}".format(json.dumps(event)))
 		return
+	if not "for" in event:
+		Logger.debug("No for in event: {0}".format(json.dumps(event)))
+		event["for"] = "streamlabs"
+	if isinstance(event["message"], dict):
+		event["message"] = json.loads( "[ {0} ]".format(json.dumps(event["message"])))
 	for message in event["message"]:
-		if message["isTest"]:
+		if "isTest" in message:
 			if not ScriptSettings.SLTestMode:
 				Logger.warning("Received test event, resend disabled in configuration")
 				Logger.debug(json.dumps(event))
 				continue
-		if message["repeat"]:
+		if "repeat" in message:
 			if not ScriptSettings.SLRepeat:
 				Logger.warning("Received repeated event, resend disabled in configuration")
 				Logger.debug(json.dumps(event))
@@ -235,6 +269,7 @@ def StreamlabsSocketAPIEvent(data):
 				Logger.info(message)
 			else:
 				Logger.warning("Unrecognised event for {0}: {1}".format(event["for"], json.dumps(event)))
+				pass
 		elif event["for"] == "twitch_account":
 			if event["type"] == "bits":
 				Logger.info(message)
@@ -250,5 +285,6 @@ def StreamlabsSocketAPIEvent(data):
 				Logger.info(message)
 			else:
 				Logger.warning("Unrecognised event for {0}: {1}".format(event["for"], json.dumps(event)))
+				pass
 		else:
 			Logger.warning("Unrecognised event for {0}: {1}".format(event["for"], json.dumps(event)))
