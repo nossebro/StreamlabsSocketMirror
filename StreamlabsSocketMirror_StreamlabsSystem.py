@@ -235,7 +235,7 @@ def StreamlabsSocketAPIMessage(data):
 #   StreamlabsSocketAPI Event Function
 #---------------------------------------
 def StreamlabsSocketAPIEvent(data):
-	event = json.loads(JSONDump(data))
+	event = json.loads(JSONDump(data).encode(encoding="UTF-8", errors="backslashreplace"))
 	if ScriptSettings.MirrorAll:
 		Logger.debug("Send original event to Local Socket")
 		Parent.BroadcastWsEvent("STREAMLABS", json.dumps(event))
