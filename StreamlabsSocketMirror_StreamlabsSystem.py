@@ -212,6 +212,8 @@ def StreamlabsSocketAPIEvent(data):
 	if not "for" in event and "type" in event and event["type"] == "donation":
 		Logger.debug("No \"for\" attribute in event: {0}".format(json.dumps(event)))
 		event["for"] = "streamlabs"
+	if isinstance(event["message"], dict):
+		event["message"] = json.loads( "[ {0} ]".format(json.dumps(event["message"])))
 	for message in event["message"]:
 		if "isTest" in message::
 			if not ScriptSettings.SLTestMode:
