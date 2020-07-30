@@ -29,7 +29,6 @@ Description = 'Mirrors events from the Streamlabs socket, and sends them to the 
 #---------------------------------------
 ScriptSettings = None
 StreamlabsSocketAPI = None
-UserIDCache = None
 Logger = None
 SettingsFile = os.path.join(os.path.dirname(__file__), "Settings.json")
 UIConfigFile = os.path.join(os.path.dirname(__file__), "UI_Config.json")
@@ -136,9 +135,6 @@ def Init():
 		StreamlabsSocketAPI.Connect()
 	else:
 		Logger.warning("Streamlabs Socket Token not configured")
-
-	global UserIDCache
-	UserIDCache = dict()
 
 #---------------------------------------
 #   Chatbot Script Unload Function
