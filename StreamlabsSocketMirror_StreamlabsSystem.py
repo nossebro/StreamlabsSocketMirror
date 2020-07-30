@@ -211,7 +211,7 @@ def StreamlabsSocketAPIEvent(data):
 		Logger.debug("Send original event to Local Socket")
 		Parent.BroadcastWsEvent("STREAMLABS", json.dumps(event))
 	if not "message" in event:
-		logger.debug("No message in event: {0}".format(json.dumps(event)))
+		Logger.debug("No message in event: {0}".format(json.dumps(event)))
 		return
 	for message in event["message"]:
 		if message["isTest"]:
